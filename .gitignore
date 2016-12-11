@@ -1,0 +1,13 @@
+*.exe
+*.exe*
+node_modules
+temp
+*.log
+*.log*
+*.js
+*.js*
+*.css
+*.css*
+fonts
+*.map
+*.map*

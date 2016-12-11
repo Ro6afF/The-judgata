@@ -1,0 +1,70 @@
+doctype html
+html
+    head
+        title= title+' - The Judgata'
+        
+        link(rel='stylesheet', href='/bootstrap.min.css')
+        link(rel='stylesheet', type='text/css', href='//fonts.googleapis.com/css?family=Roboto:300,400,500,700')
+        link(rel='stylesheet', type='text/css', href='//fonts.googleapis.com/icon?family=Material+Icons')
+        link(rel='stylesheet', type='text/css', href='/bootstrap-material-design.min.css')
+        link(rel='stylesheet', type='text/css', href='/ripples.min.css')
+        link(rel='stylesheet', type='text/css', href='/snackbar.min.css')
+        
+        link(rel='icon', href='favicon.ico')
+        link(rel='stylesheet', type='text/css', href='/style.css')
+    body
+        .navbar.navbar-default
+            .container-fluid
+                .navbar-header
+                    button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-responsive-collapse')
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                    if title=='Home'
+                        a.navbar-brand(href='#') The Judgata
+                    else
+                        a.navbar-brand(href='/') The Judgata
+                .navbar-collapse.collapse.navbar-responsive-collapse
+                    ul.nav.navbar-nav
+                        if title=='Home'
+                            li.active
+                                a(href='#') Home
+                        else
+                            li
+                                a(href='/') Home
+                        if title=='About'
+                            li.active
+                                a(href='#') About
+                        else
+                            li
+                                a(href='/about') About
+                    ul.nav.navbar-nav.navbar-right
+                        if !username
+                            li
+                                if title=='Register'
+                                    li.active
+                                        a(href='#') Register
+                                else
+                                    li
+                                        a(href='/register') Register
+                            li 
+                                if title=='Login'
+                                    li.active
+                                        a(href='#') Login
+                                else
+                                    li
+                                        a(href='/login') Login
+                        else
+                            li
+                                a(href='/')= 'Hello ' + username
+                            li
+                                a(href='/logout') Log out
+        .container.body-content
+            block content
+        script(src='/jquery.min.js')
+        script(src='/bootstrap.min.js')
+        script(src="/material.min.js")
+        script(src="/ripples.min.js")
+        script(src="/snackbar.min.js")
+        script(src="/jquery.nouislider.min.js")
+        script(src='/main.js')

@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+    if !username
+        h1.text-danger Log in to create quiz
+    else
+        .col-md-6
+            .well.bs-component
+                form.form-horizontal(action='/quiz/create', method='post')
+                    fieldset
+                        legend Create new quiz
+                        if err
+                            b 
+                                p.text-danger= err
+                        .form-group
+                            label.col-md-2.control-label(for='name') Name
+                            .col-md-10
+                                input#email.form-control(name='name', type='text', placeholder='Name')
+                        .form-group
+                            .col-md-10.col-md-offset-2
+                                button.btn.btn-primary(type='submit') Create

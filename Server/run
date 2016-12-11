@@ -1,0 +1,19 @@
+#!/bin/bash
+rm -rf ./node_modules
+npm install
+cd ./static/css
+wget http://fezvrasta.github.io/bootstrap-material-design/dist/css/bootstrap-material-design.min.css
+wget http://fezvrasta.github.io/bootstrap-material-design/dist/css/ripples.min.css
+wget http://fezvrasta.github.io/snackbarjs/dist/snackbar.min.css
+wget http://cdn.rawgit.com/FezVrasta/dropdown.js/master/jquery.dropdown.css
+cd ../js
+wget http://fezvrasta.github.io/bootstrap-material-design/dist/js/ripples.min.js
+wget http://fezvrasta.github.io/bootstrap-material-design/dist/js/material.min.js
+wget http://fezvrasta.github.io/snackbarjs/dist/snackbar.min.js
+wget http://cdnjs.cloudflare.com/ajax/libs/noUiSlider/6.2.0/jquery.nouislider.min.js
+wget https://cdn.rawgit.com/FezVrasta/dropdown.js/master/jquery.dropdown.js
+cd ..
+cp ../node_modules/jquery/dist/jquery.min.js ./js
+cp ../node_modules/bootstrap/dist/* . -r
+cd ..
+./node_modules/coffee-script/bin/coffee server.coffee

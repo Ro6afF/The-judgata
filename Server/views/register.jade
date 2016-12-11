@@ -1,0 +1,27 @@
+extends layout
+
+block content
+    .col-md-6
+        .well.bs-component
+            form.form-horizontal(method='post', action='/register')
+                fieldset
+                    legend Register
+                    if err
+                        b 
+                            p.text-danger= err
+                    .form-group.is-empty
+                        label.col-md-2.control-label(for='email') Email
+                        .col-md-10
+                            input#email.form-control(name='email', type='email', placeholder='Email')
+                        span.material-input
+                    .form-group.is-empty
+                        label.col-md-2.control-label(for='password') Password
+                        .col-md-10
+                            input#password.form-control(name='password', type='password', placeholder='Password')
+                    .form-group.is-empty
+                        label.col-md-2.control-label(for='password2') Retype password
+                        .col-md-10
+                            input#password2.form-control(name='password2', type='password', placeholder='Enter password again')
+                    .form-group
+                        .col-md-10.col-md-offset-2
+                            button.btn.btn-primary(type='submit') Submit

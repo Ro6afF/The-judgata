@@ -1,0 +1,26 @@
+extends layout
+
+block content
+    .col-md-6
+        .well.bs-component
+            form.form-horizontal(action='/login', method='post')
+                fieldset
+                    legend Login
+                    if err
+                        b 
+                            p.text-danger= err
+                    .form-group
+                        label.col-md-2.control-label(for='email') Email
+                        .col-md-10
+                            input#email.form-control(name='email', type='email', placeholder='Email')
+                    .form-group
+                        label.col-md-2.control-label(for='password') Password
+                        .col-md-10
+                            input#inputPassword.form-control(name='password', type='password', placeholder='Password')
+                            .checkbox
+                                label
+                                    input#rememberme(type='checkbox', name='rememberme')
+                                    |  Remember me?
+                    .form-group
+                        .col-md-10.col-md-offset-2
+                            button.btn.btn-primary(type='submit') Login
