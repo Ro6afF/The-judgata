@@ -5,7 +5,6 @@ temp
 *.log
 *.log*
 *.js
-*.js*
 *.css
 *.css*
 fonts

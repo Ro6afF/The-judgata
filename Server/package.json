@@ -1,0 +1,40 @@
+{
+  "name": "Quizer",
+  "version": "0.0.1",
+  "description": "Quizer web server",
+  "keywords": [
+    "node",
+    "web",
+    "server",
+    "javascript"
+  ],
+  "homepage": "https://github.com/Ro6afF/Quizer",
+  "bugs": {
+    "url": "https://github.com/Ro6afF/Quizer/issues"
+  },
+  "license": "GPL-3.0",
+  "author": {
+    "name": "Dimo Chanev"
+  },
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ro6afF/Quizer"
+  },
+  "scripts": {
+    "start": "./run"
+  },
+  "dependencies": {
+    "body-parser": "*",
+    "bootstrap": "*",
+    "coffee-middleware": "*",
+    "cookie-parser": "*",
+    "express": "*",
+    "express-session": "*",
+    "jade": "*",
+    "jquery": "*",
+    "mongodb": "*",
+    "mongoose": "*",
+    "stylus": "*"
+  }
+}
