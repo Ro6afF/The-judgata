@@ -1,0 +1,24 @@
+extends ../layout
+
+block content
+    .panel.panel-primary
+        .panel-heading 
+            h4= 'Details for ' + targetUsername
+        .panel-body
+            table.table.table-striped.table-hover
+                thead
+                    tr
+                        th Contest
+                        th Result
+                tbody
+                    - for (var i in results)
+                        if (i!='total')
+                            tr
+                                td= i
+                                td= results[i]['total']
+                        else
+                            // Trea da e zilenu
+                            tr
+                                th= i
+                                th= results[i]
+                    

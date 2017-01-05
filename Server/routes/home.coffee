@@ -10,7 +10,7 @@ getIndex = (req, res) ->
     return
 
 getAbout = (req, res) ->
-   modules.user.getUsername req.cookies.sessionId, (name) ->
+    modules.user.getUsername req.cookies.sessionId, (name) ->
         res.render 'about',
             title: 'About'
             username: name

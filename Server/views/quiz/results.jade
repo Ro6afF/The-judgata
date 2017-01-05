@@ -1,0 +1,17 @@
+extends ../layout
+
+block content
+    .panel.panel-primary
+        .panel-heading 
+            h4 Results for blqblq
+        .panel-body
+            table.table.table-striped.table-hover
+                thead
+                    tr
+                        th Username
+                        th Result
+                tbody
+                    - for (var i in results)
+                        tr
+                            td= i
+                            td= results[i]

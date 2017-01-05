@@ -1,0 +1,20 @@
+extends ../layout
+
+block content
+    form.form-horizontal(action='/quiz/submit/'+quiz._id, method='post')
+        fieldset
+            legend Practice submission
+            .form-group
+                label.col-md-2.control-label(for='task') Task
+                .col-md-10
+                    select#task.form-control(name='task')
+                        option(value='') Select one
+                        - for (var i = 0; i < quiz.problems.length; i++)
+                            option(value=quiz.problems[i])= quiz.problems[i]
+            .form-group
+                label.col-md-2.control-label(for='code') Code
+                .col-md-10
+                    textarea.form-control(name='code')
+            .form-group
+                .col-md-10.col-md-offset-2
+                    button.btn.btn-primary(type='submit') Submit

@@ -1,8 +1,8 @@
 mongoose = require 'mongoose'
 
 quizSchema = mongoose.Schema
-    id: Number
     name: String
     author: String
+    problems: [String]
 
-exports.type = mongoose.model 'Quizes', quizSchema
+exports.type = mongoose.model 'quizes', quizSchema

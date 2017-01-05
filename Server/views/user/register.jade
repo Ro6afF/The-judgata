@@ -1,9 +1,9 @@
-extends layout
+extends ../layout
 
 block content
     .col-md-6
         .well.bs-component
-            form.form-horizontal(method='post', action='/register')
+            form.form-horizontal(method='post', action='/user/register')
                 fieldset
                     legend Register
                     if err

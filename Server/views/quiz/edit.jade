@@ -1,4 +1,36 @@
 extends ../layout
 
 block content
-    h1= 'Editing ' + quiz.name + ' created from ' + quiz.author
+    .col-md-6
+        .well.bs-component
+            form.form-horizontal(action='/quiz/edit/'+quiz._id, method='post')
+                fieldset
+                    legend= 'Editing ' + quiz.name
+                    - for (var i = 0; i < quiz.problems.length; i++)
+                        .form-group
+                            label.col-md-2.control-label(for=i)= 'Task ' + (i + 1)
+                            .col-md-10
+                                select#task.form-control(name=i)
+                                    option(value='') Select one
+                                    - for (var j = 0; j < problems.length; j++)
+                                        if (problems[j].name == quiz.problems[i])
+                                            option(value=problems[j].name, selected='selected')= problems[j].name
+                                        else
+                                            option(value=problems[j].name)= problems[j].name
+                    .form-group
+                        label.col-md-2.control-label(for='start') Active from
+                        .col-md-10
+                            input#start.form-control(name='start', type='time')
+                    .form-group
+                        label.col-md-2.control-label(for='end') Active to
+                        .col-md-10
+                            input#start.form-control(name='end', type='date')
+                    .form-group
+                        span#new.btn.btn-success(href='#') Add problem
+                    .form-group
+                        .col-md-10.col-md-offset-2
+                            button.btn.btn-primary(type='submit') Save changes
+                            
+block scripts
+    script(src='/editQuiz.js')
+    

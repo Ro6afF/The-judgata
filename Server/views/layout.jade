@@ -46,19 +46,19 @@ html
                                         a(href='#') Register
                                 else
                                     li
-                                        a(href='/register') Register
+                                        a(href='/user/register') Register
                             li 
                                 if title=='Login'
                                     li.active
                                         a(href='#') Login
                                 else
                                     li
-                                        a(href='/login') Login
+                                        a(href='/user/login') Login
                         else
                             li
                                 a(href='/')= 'Hello ' + username
                             li
-                                a(href='/logout') Log out
+                                a(href='/user/logout') Log out
         .container.body-content
             block content
         script(src='/jquery.min.js')
@@ -68,3 +68,4 @@ html
         script(src="/snackbar.min.js")
         script(src="/jquery.nouislider.min.js")
         script(src='/main.js')
+        block scripts

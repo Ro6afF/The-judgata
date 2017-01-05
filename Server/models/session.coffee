@@ -4,4 +4,4 @@ sessionSchema = mongoose.Schema
     id: String
     username: String
 
-exports.type = mongoose.model 'Sessions', sessionSchema
+exports.type = mongoose.model 'sessions', sessionSchema

@@ -1,12 +1,7 @@
 mongoose = require 'mongoose'
 
 add = (a, cb) ->
-    a.save (err, b) ->
-        if err
-            console.error err
-        else
-            cb b
-        return
+    a.save cb
     return
 
 find = (a, b, cb) ->
@@ -17,8 +12,13 @@ remove = (a, b, cb) ->
     a.remove b, cb
     return
 
-mongoose.connect 'mongodb://localhost/The-judgata'
+update = (a, b, c, opts, cb) ->
+    a.update b, c, cb
+    return
+
+mongoose.connect 'mongodb://localhost/judgata'
 
 exports.add = add
 exports.find = find
 exports.remove = remove
+exports.update = update
