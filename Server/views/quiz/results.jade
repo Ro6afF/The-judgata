@@ -3,7 +3,7 @@ extends ../layout
 block content
     .panel.panel-primary
         .panel-heading 
-            h4 Results for blqblq
+            h4= title
         .panel-body
             table.table.table-striped.table-hover
                 thead
@@ -14,4 +14,4 @@ block content
                     - for (var i in results)
                         tr
                             td= i
-                            td= results[i]
+                            td= Math.round(results[i])

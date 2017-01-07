@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "body-parser": "*",
+    "codemirror": "*",
     "bootstrap": "*",
     "coffee-middleware": "*",
     "cookie-parser": "*",

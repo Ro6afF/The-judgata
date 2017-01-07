@@ -7,6 +7,7 @@ models =
         problem: require '../models/problem'
         task: require '../models/task'
         result: require '../models/result'
+        lang: require '../models/lang'
     
 getCreate = (req, res) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
@@ -95,10 +96,12 @@ getSubmit = (req, res) ->
         modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
             if quizes && quizes.length
                 for q in quizes
-                    res.render 'quiz/submit', 
-                        title: 'Submiting in ' + q.name
-                        username: name
-                        quiz: q
+                    modules.db.find models.lang.type, {active: true}, (err, langs) ->
+                        res.render 'quiz/submit', 
+                            title: 'Submiting in ' + q.name
+                            username: name
+                            langs: langs
+                            quiz: q
 
 postSubmit = (req, res) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
@@ -107,15 +110,12 @@ postSubmit = (req, res) ->
                 code: req.body.code
                 user: name
                 task: req.body.task
-                lang: 'cpp'
+                lang: req.body.lang
                 contest: req.params.id
                 contestName: quizes[0].name), (a) ->
                     if quizes && quizes.length
                         for q in quizes
-                            res.render 'quiz/submit', 
-                                title: 'Submiting in ' + q.name
-                                username: name
-                                quiz: q
+                            res.redirect '/quiz/submit/' + req.params.id
                 return
         return
     return        
@@ -138,11 +138,14 @@ getResults = (req, res) ->
         if req.headers['user-agent'] == 'API'
             res.json resultsUser
         else
-            modules.user.getUsername req.cookies.sessionId, (name) ->
-                res.render 'quiz/results', 
-                    title: 'Results for ' + 'shte go dobave po-kusno'
-                    username: name
-                    results: resultsUser
+            modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
+                if quizes && quizes.length
+                    for q in quizes
+                        modules.user.getUsername req.cookies.sessionId, (name) ->
+                            res.render 'quiz/results',
+                                title: 'Results for ' + q.name
+                                username: name
+                                results: resultsUser
               
 exports.getCreate = getCreate
 exports.postCreate = postCreate

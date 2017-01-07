@@ -22,6 +22,7 @@ app.use express.static 'static/css'
 app.use express.static 'static/html'
 app.use express.static 'static/js'
 app.use express.static 'static/images'
+app.use express.static 'node_modules'
 
 app.use coffee
     src: __dirname + '/static/js'

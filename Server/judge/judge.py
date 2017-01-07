@@ -9,7 +9,7 @@ db = MongoClient().judgata
 max_threads = multiprocessing.cpu_count()
 
 def getCompileCommand(lang):
-	return db.langs.find_one({'lang': lang})['command']
+	return db.langs.find_one({'lang': lang})
 
 def getNumberOfFiles(direc):
 	return len(next(os.walk(direc))[2])
@@ -19,6 +19,7 @@ def getFreeBox(boxes):
 		if boxes[i]:
 			boxes[i] = False
 			return i
+	return -1
 	return -1
 
 def getBoxPlace(Id):
@@ -35,12 +36,17 @@ def deinitBox(Id, boxes):
 
 def compileProgram(path, dest, lang):
 	print('Compiling program in language ' + lang)
-	compileArgs = getCompileCommand(lang)
+	lango = getCompileCommand(lang)
+	print(lango)
+	compileArgs = lango['command']
 	for i in range(len(compileArgs)):
-		if compileArgs[i] == '__SOURCE__':
-			compileArgs[i] = path
-		elif compileArgs[i] == '__RESULT__':
-			compileArgs[i] = dest
+		if lango['type'] == 'compiled':
+			compileArgs[i] = compileArgs[i].replace('__SOURCE__', path)
+			compileArgs[i] = compileArgs[i].replace('__RESULT__', dest)
+		elif lango['type'] == 'script':
+			print('asd')
+		elif lango['type'] == 'both':
+			print('asdf')
 	try:
 		proc = subprocess.Popen(compileArgs, preexec_fn = os.setsid)
 		if proc.wait(timeout = 10) != 0:
@@ -57,12 +63,12 @@ def grade(task, box):
 	ppt = 100 / tests
 	feedback = []
 	for i in range(getNumberOfFiles(getBoxPlace(box) + task)):
-		process = subprocess.Popen(['isolate', '-i', task + '/' + str(i) + '.in', '-o', task + '/' + str(i) + '.res', '-b', str(box), '-t', '1', '-m', str(16*1024), '--run', 'solution'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		process = subprocess.Popen(['isolate', '-i', task + '/' + str(i) + '.in', '-o', task + '/' + str(i) + '.res', '-b', str(box), '-t', '1', '-m', str(16*10*1024), '--run', 'solution'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		process.wait()
 		out, err = process.communicate()
 		res = err.decode('utf-8')
 		if res[:2] == 'OK':
-			process = subprocess.Popen(['diff', getBoxPlace(box) + task + '/' + str(i) + '.res', getBoxPlace(box) + task + '/sols/' + str(i) + '.sol'], stdout=subprocess.PIPE)
+			process = subprocess.Popen(['diff', '-w' , getBoxPlace(box) + task + '/' + str(i) + '.res', getBoxPlace(box) + task + '/sols/' + str(i) + '.sol'], stdout=subprocess.PIPE)
 			out, err = process.communicate()
 			if out.decode('utf-8') == '':
 				feedback += ['OK']
@@ -105,7 +111,7 @@ def judge(Id, code, user, task, lang, contest, contestName, boxes):
 	sys.stdout.flush()
 	print('Done judge')
 	sys.stdout.flush()
-	db.results.insert_one({'id': Id, 'result': result, 'contest': contest, 'user': user, 'task': task, 'contestName': contestName, 'feedback': feedback})
+	db.results.insert_one({'id': Id, 'result': round(result), 'contest': contest, 'user': user, 'task': task, 'contestName': contestName, 'feedback': feedback})
 
 def getTask():
 	jobs = []

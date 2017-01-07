@@ -13,6 +13,8 @@ wget http://fezvrasta.github.io/snackbarjs/dist/snackbar.min.js
 wget http://cdnjs.cloudflare.com/ajax/libs/noUiSlider/6.2.0/jquery.nouislider.min.js
 wget https://cdn.rawgit.com/FezVrasta/dropdown.js/master/jquery.dropdown.js
 cd ..
+cp ../node_modules/codemirror/lib/codemirror.css ./css
+cp ../node_modules/codemirror/lib/codemirror.js ./js
 cp ../node_modules/jquery/dist/jquery.min.js ./js
 cp ../node_modules/bootstrap/dist/* . -r
 cd ..

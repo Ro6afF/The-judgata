@@ -14,7 +14,25 @@ block content
             .form-group
                 label.col-md-2.control-label(for='code') Code
                 .col-md-10
-                    textarea.form-control(name='code')
+                    textarea#code.form-control(name='code')
+            .form-group
+                label.col-md-2.control-label(for='lang') Language
+                .col-md-10
+                    select#lang.form-control(name='lang', onchange='change();')
+                        - for (var i = 0; i < langs.length; i++)
+                            option(value=langs[i].lang)= langs[i].lang
             .form-group
                 .col-md-10.col-md-offset-2
                     button.btn.btn-primary(type='submit') Submit
+                   
+block scripts
+    script(src='/codemirror/addon/mode/simple.js')
+    script(src='/codemirror/addon/fold/foldcode.js')
+    script(src='/codemirror/lib/codemirror.js')
+    script(src='/codemirror/mode/clike/clike.js')
+    script(src='/codemirror/mode/haskell/haskell.js')
+    script(src='/codemirror/mode/rust/rust.js')
+    script(src='/submitQuiz.js')
+
+block styles
+    link(rel='stylesheet', type='text/css', href='/codemirror/lib/codemirror.css')
