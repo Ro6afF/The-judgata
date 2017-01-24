@@ -93,16 +93,49 @@ postNewProblem = (req, res) ->
 
 getSubmit = (req, res) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
-        modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
-            if quizes && quizes.length
-                for q in quizes
-                    modules.db.find models.lang.type, {active: true}, (err, langs) ->
-                        res.render 'quiz/submit', 
-                            title: 'Submiting in ' + q.name
-                            username: name
-                            langs: langs
-                            quiz: q
+        if name
+            modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
+                if quizes && quizes.length
+                    for q in quizes
+                        modules.db.find models.lang.type, {active: true}, (err, langs) ->
+                            res.render 'quiz/submit', 
+                                title: 'Submiting in ' + q.name
+                                username: name
+                                langs: langs
+                                quiz: q
+        else
+            res.render 'error', 
+                    title: 'Not perimted',
+                    username: name,
+                    text: 'Login to submit in quiz!'
 
+getSubmitDetails = (req, res) ->
+    modules.user.getUsername req.cookies.sessionId, (name) ->
+        modules.db.find models.result.type, {user: name, idT: req.params.id}, (err, source) ->
+            if source && source.length
+                for s in source
+                    res.render 'quiz/submitDetails', 
+                        title: 'Solution ' + req.params.id + ' for problem ' + s.task,
+                        username: name,
+                        result: s
+            else
+                res.render 'error', 
+                    title: 'Not perimted',
+                    username: name,
+                    text: 'Not your submit!'
+                    
+downloadSource = (req, res) ->
+    modules.user.getUsername req.cookies.sessionId, (name) ->
+        modules.db.find models.result.type, {user: name, idT: req.params.id}, (err, source) ->
+            if source && source.length
+                for s in source
+                    res.sendFile '/judge/submits/' + name + '/' + s.task + '/' + req.params.id + '.' + s.lang
+            else
+                res.render 'error', 
+                    title: 'Not perimted',
+                    username: name,
+                    text: 'This is not your source!'
+                    
 postSubmit = (req, res) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
         modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
@@ -146,7 +179,6 @@ getResults = (req, res) ->
                                 title: 'Results for ' + q.name
                                 username: name
                                 results: resultsUser
-              
 exports.getCreate = getCreate
 exports.postCreate = postCreate
 exports.getEdit = getEdit
@@ -155,3 +187,5 @@ exports.postNewProblem = postNewProblem
 exports.getSubmit = getSubmit
 exports.postSubmit = postSubmit
 exports.getResults = getResults
+exports.downloadSource = downloadSource
+exports.getSubmitDetails = getSubmitDetails

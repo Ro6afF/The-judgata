@@ -1,0 +1,25 @@
+extends ../layout
+
+block content
+    .panel.panel-primary
+        .panel-heading 
+            h4= title
+        .panel-body
+            //div= JSON.stringify (result['feedback'])
+            -for (var i = 0; i < result['feedback'].length; i++)
+                -var curr = result.feedback[i]
+                if(curr == 'Compilation error')
+                    h2.text-danger= curr
+                    -break
+                else
+                    if (curr == 'OK')
+                        h3.text-success= 'Test #' + (i+1) + ' (Correct answer)'
+                    else if (curr == 'WA')
+                        h3.text-danger= 'Test #' + (i+1) + ' (Wrong answer)'
+                    else if (curr == 'TL')
+                        h3.text-danger= 'Test #' + (i+1) + ' (Time limit)'
+                    else if (curr == 'SF')
+                        h3.text-danger= 'Test #' + (i+1) + ' (Segmentation vault)'
+                    else if (curr == 'RE')
+                        h3.text-danger= 'Test #' + (i+1) + ' (Runtime error)'
+            a.btn.btn-primary(href='../source/' + result.idT) Download source

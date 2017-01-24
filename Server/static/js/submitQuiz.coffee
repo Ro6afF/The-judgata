@@ -1,7 +1,7 @@
 CodeMirror.modeURL = '/codemirror/mode/%N/%N.js'
 
 editor = CodeMirror.fromTextArea(document.getElementById('code'),
-    mode: 'text/plain'
+    mode: 'text/x-c++src'
     lineNumbers: true
     lineWrapping: true)
 

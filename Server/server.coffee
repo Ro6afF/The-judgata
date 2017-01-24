@@ -68,6 +68,10 @@ app.post '/quiz/submit/:id', routes.quizes.postSubmit
 
 app.get '/quiz/results/:id', routes.quizes.getResults
 
+app.get '/quiz/source/:id', routes.quizes.downloadSource
+
+app.get '/quiz/details/:id', routes.quizes.getSubmitDetails
+
 app.get '/:contest/submit', routes.contests.getSubmit
 app.post '/:contest/submit', routes.contests.postSubmit
 

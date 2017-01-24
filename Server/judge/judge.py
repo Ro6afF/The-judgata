@@ -20,7 +20,6 @@ def getFreeBox(boxes):
 			boxes[i] = False
 			return i
 	return -1
-	return -1
 
 def getBoxPlace(Id):
 	return '/var/local/lib/isolate/' + str(Id) + '/box/'
@@ -67,6 +66,7 @@ def grade(task, box):
 		process.wait()
 		out, err = process.communicate()
 		res = err.decode('utf-8')
+		print(res, 'Time limit exceeded')
 		if res[:2] == 'OK':
 			process = subprocess.Popen(['diff', '-w' , getBoxPlace(box) + task + '/' + str(i) + '.res', getBoxPlace(box) + task + '/sols/' + str(i) + '.sol'], stdout=subprocess.PIPE)
 			out, err = process.communicate()
@@ -75,7 +75,7 @@ def grade(task, box):
 				result += ppt
 			else:
 				feedback += ['WA']
-		elif res == 'Time limit exceeded':
+		elif res.strip() == 'Time limit exceeded':
 			feedback += ['TL']
 		elif res == 'Caught fatal signal 11':
 			feedback += ['SF']
@@ -111,7 +111,7 @@ def judge(Id, code, user, task, lang, contest, contestName, boxes):
 	sys.stdout.flush()
 	print('Done judge')
 	sys.stdout.flush()
-	db.results.insert_one({'id': Id, 'result': round(result), 'contest': contest, 'user': user, 'task': task, 'contestName': contestName, 'feedback': feedback})
+	db.results.insert_one({'idT': str(Id), 'result': round(result), 'contest': contest, 'user': user, 'task': task, 'contestName': contestName, 'feedback': feedback, 'lang': lang})
 
 def getTask():
 	jobs = []
