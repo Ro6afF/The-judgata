@@ -3,7 +3,7 @@ extends ../layout
 block content
     form.form-horizontal(action='/quiz/submit/'+quiz._id, method='post')
         fieldset
-            legend Practice submission
+            legend= title
             .form-group
                 label.col-md-2.control-label(for='task') Task
                 .col-md-10
@@ -24,6 +24,28 @@ block content
             .form-group
                 .col-md-10.col-md-offset-2
                     button.btn.btn-primary(type='submit') Submit
+    .panel.panel-primary
+        .panel-heading 
+            h4 Your submits
+        .panel-body
+            table.table.table-striped.table-hover
+                thead
+                    tr
+                        th Number
+                        th Points
+                        th
+                tbody
+                    - for (var i = submits.length - 1; i >= 0; i--)
+                        tr
+                            td= i + 1
+                            - var blq = submits[i]['feedback']
+                            td
+                                - for (var j of blq)
+                                    span= j + ' '
+                            td
+                                a.btn.btn-primary(href = '../details/' + submits[i]['idT']) Details
+                
+                
                     
 block scripts
     script(src='/codemirror/lib/codemirror.js')

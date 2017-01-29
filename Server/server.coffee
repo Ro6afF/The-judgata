@@ -38,7 +38,6 @@ app.use stylus.middleware __dirname + '/static/css'
 
 app.set 'view engine', 'jade'
 
-
 app.get '/', routes.home.getIndex
 
 app.get '/about', routes.home.getAbout

@@ -24,7 +24,7 @@ block content
                     .form-group
                         label.col-md-2.control-label(for='end') Active to
                         .col-md-10
-                            input#start.form-control(name='end', type='date')
+                            input#end.form-control(name='end', type='date')
                     .form-group
                         span#new.btn.btn-success(href='#') Add problem
                     .form-group
@@ -33,4 +33,9 @@ block content
                             
 block scripts
     script(src='/editQuiz.js')
+    script(src='/flatpickr.min.js')
+    script $("#start").flatpickr({enableTime: true});
+    script $("#end").flatpickr({enableTime: true});
     
+block styles
+    link(rel='stylesheet', type='text/css', href='/flatpickr.min.css')

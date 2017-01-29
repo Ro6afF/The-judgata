@@ -51,10 +51,11 @@ getEdit = (req, res) ->
 
 postEdit = (req, res) ->
     tasks = []
+    console.log req.body
     for k,v of req.body
         tasks[parseInt k] = v
     modules.user.getUsername req.cookies.sessionId, (name) ->
-        modules.db.update models.quiz.type, {_id: req.params.id, author: name}, {problems: tasks}, undefined, (err, raw) ->
+        modules.db.update models.quiz.type, {_id: req.params.id, author: name}, {problems: tasks, start: (new Date(req.body.start)).toISOString(), end: (new Date(req.body.end)).toISOString()}, undefined, (err, raw) ->
             if err
                 console.log err
                 res.render 'error', 
@@ -97,12 +98,23 @@ getSubmit = (req, res) ->
             modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
                 if quizes && quizes.length
                     for q in quizes
-                        modules.db.find models.lang.type, {active: true}, (err, langs) ->
-                            res.render 'quiz/submit', 
-                                title: 'Submiting in ' + q.name
-                                username: name
-                                langs: langs
-                                quiz: q
+                        now = new Date Date.now()
+                        end = new Date q.end
+                        start = new Date q.start
+                        if now > start && now < end
+                            modules.db.find models.lang.type, {active: true}, (err, langs) ->
+                                modules.db.find models.result.type, {user: name, contest: req.params.id}, (err, submits) ->
+                                    res.render 'quiz/submit', 
+                                        title: 'Submiting in ' + q.name
+                                        username: name
+                                        langs: langs
+                                        quiz: q
+                                        submits: submits
+                        else
+                            res.render 'error', 
+                                title: 'Not perimted',
+                                username: name,
+                                text: 'Contest is not running'
         else
             res.render 'error', 
                     title: 'Not perimted',

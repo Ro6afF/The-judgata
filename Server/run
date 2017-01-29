@@ -17,5 +17,7 @@ cp ../node_modules/codemirror/lib/codemirror.css ./css
 cp ../node_modules/codemirror/lib/codemirror.js ./js
 cp ../node_modules/jquery/dist/jquery.min.js ./js
 cp ../node_modules/bootstrap/dist/* . -r
+cp ../node_modules/flatpickr/dist/flatpickr.min.css ./css
+cp ../node_modules/flatpickr/dist/flatpickr.min.js ./js
 cd ..
 ./node_modules/coffee-script/bin/coffee server.coffee
