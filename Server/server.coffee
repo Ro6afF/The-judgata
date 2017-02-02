@@ -1,7 +1,7 @@
 http = require 'http'
 https = require 'https'
 express = require 'express'
-stylus = require 'stylus'
+stylus = require 'express-stylus'
 bodyParser = require 'body-parser'
 cookieParser = require 'cookie-parser'
 coffee = require 'coffee-middleware'
@@ -10,7 +10,6 @@ routes =
     accounts: require __dirname + '/routes/accounts' 
     home: require __dirname + '/routes/home'
     quizes: require __dirname + '/routes/quizes'
-    contests: require __dirname + '/routes/contests'
     problems: require __dirname + '/routes/problems'
 
 modules = 
@@ -18,23 +17,24 @@ modules =
     
 app = express()
         
+app.use coffee
+    src: __dirname + '/static/js'
+    compress: true
+    bare: true
+    
+app.use stylus 
+    src: __dirname + '/static/css'
+    
 app.use express.static 'static/css'
 app.use express.static 'static/html'
 app.use express.static 'static/js'
 app.use express.static 'static/images'
 app.use express.static 'node_modules'
 
-app.use coffee
-    src: __dirname + '/static/js'
-    compress: true
-    bare: true
-
 app.use bodyParser.json()
 app.use bodyParser.urlencoded(extended: false)
 
 app.use cookieParser()
-
-app.use stylus.middleware __dirname + '/static/css'
 
 app.set 'view engine', 'jade'
 
@@ -70,9 +70,6 @@ app.get '/quiz/results/:id', routes.quizes.getResults
 app.get '/quiz/source/:id', routes.quizes.downloadSource
 
 app.get '/quiz/details/:id', routes.quizes.getSubmitDetails
-
-app.get '/:contest/submit', routes.contests.getSubmit
-app.post '/:contest/submit', routes.contests.postSubmit
 
 app.get '/problem/create', routes.problems.getCreate
 app.post '/problem/create', routes.problems.postCreate

@@ -1,11 +1,18 @@
 modules = 
         user: require('../modules/user')
+        db: require('../modules/db')
+        
+models = 
+        quiz: require '../models/quiz' 
 
 getIndex = (req, res) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
-        res.render 'index',
-            title: 'Home'
-            username: name
+        modules.db.find models.quiz.type, {}, (err, quizes) ->
+            if quizes
+                res.render 'index',
+                    title: 'Home'
+                    quizes: quizes
+                    username: name
         return
     return
 

@@ -33,7 +33,7 @@ getEdit = (req, res) ->
         modules.db.find models.quiz.type, {_id: req.params.id, author: name}, (err, quizes) ->
             if quizes
                 for q in quizes
-                    modules.db.find models.problem.type, {active: true}, (err, problems) ->
+                    modules.db.find models.problem.type, {}, (err, problems) ->
                         res.render 'quiz/edit', 
                             title: 'Edit quiz ' + q.name,
                             username: name,
@@ -51,7 +51,6 @@ getEdit = (req, res) ->
 
 postEdit = (req, res) ->
     tasks = []
-    console.log req.body
     for k,v of req.body
         tasks[parseInt k] = v
     modules.user.getUsername req.cookies.sessionId, (name) ->
@@ -98,11 +97,11 @@ getSubmit = (req, res) ->
             modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
                 if quizes && quizes.length
                     for q in quizes
+                        start = new Date q.start
                         now = new Date Date.now()
                         end = new Date q.end
-                        start = new Date q.start
                         if now > start && now < end
-                            modules.db.find models.lang.type, {active: true}, (err, langs) ->
+                            modules.db.find models.lang.type, {}, (err, langs) ->
                                 modules.db.find models.result.type, {user: name, contest: req.params.id}, (err, submits) ->
                                     res.render 'quiz/submit', 
                                         title: 'Submiting in ' + q.name
@@ -141,7 +140,7 @@ downloadSource = (req, res) ->
         modules.db.find models.result.type, {user: name, idT: req.params.id}, (err, source) ->
             if source && source.length
                 for s in source
-                    res.sendFile '/judge/submits/' + name + '/' + s.task + '/' + req.params.id + '.' + s.lang
+                    res.download '/judge/submits/' + name + '/' + s.task + '/' + req.params.id + '.' + s.lang
             else
                 res.render 'error', 
                     title: 'Not perimted',
@@ -179,7 +178,6 @@ getResults = (req, res) ->
                 if !resultsUser[j]
                     resultsUser[j] = 0
                 resultsUser[j] += c
-        console.log resultsUser
         if req.headers['user-agent'] == 'API'
             res.json resultsUser
         else

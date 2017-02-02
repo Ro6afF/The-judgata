@@ -4,3 +4,59 @@ block content
     .jumbotron
         img.img-responsive(src='orig_logo.png')
         p The open-source quiz and survey platform
+    -var upcomming = []
+    -var running = []
+    -var finished = []
+    -var now = new Date(Date.now())
+    -for (var i = 0; i < quizes.length; i++)
+        if new Date(quizes[i].start) > now
+            -upcomming.push(quizes[i])
+        else if new Date(quizes[i].start) < now && new Date(quizes[i].end) > now
+            -running.push(quizes[i])
+        else 
+            -finished.push(quizes[i])
+    .panel.panel-primary
+        .panel-heading 
+            h4 Active quizes
+        .panel-body
+            -for (var i = 0; i < running.length; i++)
+                .col-md-4#quiz-home
+                    h3= running[i].name
+                    -var diff = (new Date(running[i].end).getTime() - now.getTime())
+                    -var remain = "";
+                    -var days = Math.floor(diff / (1000 * 60 * 60 * 24))
+                    -var hours = Math.floor(diff / (1000 * 60 * 60)) - days * 24
+                    -var minutes = Math.floor(diff / (1000 * 60)) - ((hours * 60) + (days * 24 * 60))
+                    if days >= 1
+                        -remain += ' ' + days + ' Days'
+                    if hours >= 1 || days >= 1
+                        -remain += ' ' + hours + ' Hours'
+                    if minutes >= 1 || days >= 1 || hours >= 1
+                        -remain += ' ' + minutes + ' Minutes'
+                    h5='Time remaining: ' +  remain
+                    a.btn.btn-primary.btn-small(href="/quiz/submit/" + running[i]['_id']) Compete
+                    a.btn.btn-primary.btn-small(href="/quiz/results/" + running[i]['_id']) View results
+
+        //
+            1
+                    th Name
+                    th Time remaining
+                    th
+                -for (var i = 0; i < running.length; i++)
+                    tr
+                        td= running[i].name
+                        -var diff = (new Date(running[i].end).getTime() - now.getTime())
+                        -var remain = "";
+                        -var days = Math.floor(diff / (1000 * 60 * 60 * 24))
+                        -var hours = Math.floor(diff / (1000 * 60 * 60)) - days * 24
+                        -var minutes = Math.floor(diff / (1000 * 60)) - hours * 60 - days * 24
+                        if days >= 1
+                            -remain += ' ' + days + ' Days'
+                        if hours >= 1 || days >= 1
+                            -remain += ' ' + hours + ' Hours'
+                        if minutes >= 1 || days >= 1 || hours >= 1
+                            -remain += ' ' + minutes + ' Minutes'
+                        td
+                            div= remain
+                        td
+                            a.btn.btn-primary.btn-small(href="/quiz/submit/" + running[i]['_id']) Competee

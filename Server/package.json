@@ -36,7 +36,7 @@
     "jquery": "*",
     "mongodb": "*",
     "mongoose": "*",
-    "stylus": "*",
+    "express-stylus": "*",
     "flatpickr": "*"
   }
 }

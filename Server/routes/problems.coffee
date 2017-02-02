@@ -19,7 +19,6 @@ postCreate = (req, res) ->
         modules.db.add (new models.problem.type (
             name: req.body.name
             admins: [name]
-            active: true
         )), (err, b) ->
             res.redirect '/problem/edit/' + b.id
             return
