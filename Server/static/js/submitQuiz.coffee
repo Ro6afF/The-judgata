@@ -10,6 +10,7 @@ modes =
     hs: 'text/x-haskell'
     cs: 'text/x-csharp'
     rs: 'text/x-rustsrc'
+    py: 'text/x-python'
 
 names = 
     cpp: 'C/C++'

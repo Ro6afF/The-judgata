@@ -181,6 +181,11 @@ getResults = (req, res) ->
         if req.headers['user-agent'] == 'API'
             res.json resultsUser
         else
+            results = []
+            for k, v of resultsUser
+                results.push {name: k, points: v}
+            results.sort (x, y) ->
+                y.points - x.points
             modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
                 if quizes && quizes.length
                     for q in quizes
@@ -188,7 +193,7 @@ getResults = (req, res) ->
                             res.render 'quiz/results',
                                 title: 'Results for ' + q.name
                                 username: name
-                                results: resultsUser
+                                results: results
 exports.getCreate = getCreate
 exports.postCreate = postCreate
 exports.getEdit = getEdit

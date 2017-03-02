@@ -8,10 +8,13 @@ block content
             table.table.table-striped.table-hover
                 thead
                     tr
+                        th #
                         th Username
                         th Result
                 tbody
-                    - for (var i in results)
+                    - var num = 1
+                    - for (var i of results)
                         tr
-                            td= i
-                            td= Math.round(results[i])
+                            td= num++
+                            td= i.name
+                            td= Math.round(i.points)
