@@ -17,5 +17,16 @@ block content
                             .col-md-10
                                 input#email.form-control(name='name', type='text', placeholder='Name')
                         .form-group
+                            label.col-md-2.control-label(for='type') Type
+                            .col-md-10
+                                .radio.radio-primary
+                                    label
+                                        input#type(name='type', value='code', checked='checked', type='radio')
+                                        | Code
+                                .radio.radio-primary
+                                    label
+                                        input#type(name='type', value='test', type='radio')
+                                        | Test
+                        .form-group
                             .col-md-10.col-md-offset-2
                                 button.btn.btn-primary(type='submit') Create

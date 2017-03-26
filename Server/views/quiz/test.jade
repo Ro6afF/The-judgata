@@ -1,0 +1,20 @@
+extends ../layout
+
+block content
+    - for (var i = 0; i < quiz.problems.length; i++)
+        -var curr = problems.find(function (el) {return el.name == quiz.problems[i]})
+        if curr
+            .col-md-6
+                .well.bs-component
+                    form.form-horizontal(action='/quiz/test/'+quiz._id+'/'+curr._id, method='post') 
+                        fieldset
+                            legend= curr.description
+                            -for (var j = 0; j < curr.options.length; j++)
+                                .form-group
+                                    .col-md-10
+                                        .radio.radio-primary
+                                            label=curr.options[j]
+                                                input(name='ans', value=j, type='radio')
+                            .form-group
+                                .col-md-10.col-md-offset-2
+                                    button.btn.btn-primary(type='submit') Send

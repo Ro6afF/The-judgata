@@ -10,7 +10,8 @@ block content
                     select#task.form-control(name='task')
                         option(value='') Select one
                         - for (var i = 0; i < quiz.problems.length; i++)
-                            option(value=quiz.problems[i])= quiz.problems[i]
+                            if problems.find(function (el) {return el.name == quiz.problems[i]})
+                                option(value=quiz.problems[i])= quiz.problems[i]
             .form-group
                 label.col-md-2.control-label(for='code') Code
                 .col-md-10

@@ -65,6 +65,8 @@ app.post '/quiz/newProblem/:id', routes.quizes.postNewProblem
 app.get '/quiz/submit/:id', routes.quizes.getSubmit
 app.post '/quiz/submit/:id', routes.quizes.postSubmit
 
+app.get '/quiz/test/:id', routes.quizes.getTest
+
 app.get '/quiz/results/:id', routes.quizes.getResults
 
 app.get '/quiz/source/:id', routes.quizes.downloadSource
@@ -74,10 +76,13 @@ app.get '/quiz/details/:id', routes.quizes.getSubmitDetails
 app.get '/problem/create', routes.problems.getCreate
 app.post '/problem/create', routes.problems.postCreate
 
+app.get '/problem/edit/:id', routes.problems.getEdit
+app.post '/problem/edit/:id', routes.problems.postEdit
+
+app.post '/problem/newOption/:id', routes.problems.postNewOption
 
 app.use (req, res, next) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
-        res.status 404
         res.render 'error', 
             title: '404',
             user: name,

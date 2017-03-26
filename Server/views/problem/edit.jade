@@ -1,0 +1,34 @@
+extends ../layout
+
+block content
+    .col-md-6
+        .well.bs-component
+            form.form-horizontal(action='/problem/edit/'+problem._id, method='post')
+                fieldset
+                    legend= 'Editing ' + problem.name
+                    if problem.type == 'code'
+                        h1.text-danger Not implemented
+                    else
+                        .form-group
+                            label.col-md-2.control-label(for='description') Description
+                            .col-md-10
+                                textarea#description.form-control(rows='3', name='description')= problem.description
+                        -for (var i = 0; i < problem.options.length; i++)
+                            .form-group
+                                .col-md-10
+                                    .radio.radio-primary
+                                        label
+                                            if i == problem.ans
+                                                input(name='ans', value=i, checked='checked', type='radio')
+                                            else
+                                                input(name='ans', value=i, type='radio')
+                                            input.form-control(name=i, type='text', placeholder='Option ' + (i+1), value=problem.options[i])    
+                    .form-group
+                        span#new.btn.btn-success(href='#') Add option
+                    .form-group
+                        .col-md-10.col-md-offset-2
+                            button.btn.btn-primary(type='submit') Save changes
+                            
+block scripts
+    script(src='/editProblem.js')
+    

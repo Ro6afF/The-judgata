@@ -7,6 +7,7 @@ models =
         problem: require '../models/problem'
         task: require '../models/task'
         result: require '../models/result'
+        problem: require '../models/problem'
         lang: require '../models/lang'
     
 getCreate = (req, res) ->
@@ -95,31 +96,60 @@ getSubmit = (req, res) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
         if name
             modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
-                if quizes && quizes.length
-                    for q in quizes
-                        start = new Date q.start
-                        now = new Date Date.now()
-                        end = new Date q.end
-                        if now > start && now < end
-                            modules.db.find models.lang.type, {}, (err, langs) ->
-                                modules.db.find models.result.type, {user: name, contest: req.params.id}, (err, submits) ->
-                                    res.render 'quiz/submit', 
-                                        title: 'Submiting in ' + q.name
-                                        username: name
-                                        langs: langs
-                                        quiz: q
-                                        submits: submits
-                        else
-                            res.render 'error', 
-                                title: 'Not perimted',
-                                username: name,
-                                text: 'Contest is not running'
+                    if quizes && quizes.length
+                        for q in quizes
+                            modules.db.find models.problem.type, {type: 'code'}, (err, problems) ->
+                                start = new Date q.start
+                                now = new Date Date.now()
+                                end = new Date q.end
+                                if now > start && now < end
+                                    modules.db.find models.lang.type, {}, (err, langs) ->
+                                        modules.db.find models.result.type, {user: name, contest: req.params.id}, (err, submits) ->
+                                            res.render 'quiz/submit', 
+                                                title: 'Submiting in ' + q.name
+                                                username: name
+                                                langs: langs
+                                                quiz: q
+                                                submits: submits
+                                                problems: problems
+                                else
+                                    res.render 'error', 
+                                        title: 'Not perimted',
+                                        username: name,
+                                        text: 'Contest is not running'
         else
             res.render 'error', 
                     title: 'Not perimted',
                     username: name,
                     text: 'Login to submit in quiz!'
 
+getTest = (req, res) ->
+    modules.user.getUsername req.cookies.sessionId, (name) ->
+        if name
+            modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
+                    if quizes && quizes.length
+                        for q in quizes
+                            modules.db.find models.problem.type, {type: 'test'}, (err, problems) ->
+                                start = new Date q.start
+                                now = new Date Date.now()
+                                end = new Date q.end
+                                if now > start && now < end
+                                    res.render 'quiz/test', 
+                                        title: 'Submiting in ' + q.name
+                                        username: name
+                                        quiz: q
+                                        problems: problems
+                                else
+                                    res.render 'error', 
+                                        title: 'Not perimted',
+                                        username: name,
+                                        text: 'Contest is not running'
+        else
+            res.render 'error', 
+                    title: 'Not perimted',
+                    username: name,
+                    text: 'Login to test in quiz!'
+                    
 getSubmitDetails = (req, res) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
         modules.db.find models.result.type, {user: name, idT: req.params.id}, (err, source) ->
@@ -194,6 +224,7 @@ getResults = (req, res) ->
                                 title: 'Results for ' + q.name
                                 username: name
                                 results: results
+                                
 exports.getCreate = getCreate
 exports.postCreate = postCreate
 exports.getEdit = getEdit
@@ -204,3 +235,4 @@ exports.postSubmit = postSubmit
 exports.getResults = getResults
 exports.downloadSource = downloadSource
 exports.getSubmitDetails = getSubmitDetails
+exports.getTest = getTest
