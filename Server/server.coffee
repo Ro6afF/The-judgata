@@ -66,6 +66,7 @@ app.get '/quiz/submit/:id', routes.quizes.getSubmit
 app.post '/quiz/submit/:id', routes.quizes.postSubmit
 
 app.get '/quiz/test/:id', routes.quizes.getTest
+app.post '/quiz/test/:qid/:tid', routes.quizes.postTest
 
 app.get '/quiz/results/:id', routes.quizes.getResults
 

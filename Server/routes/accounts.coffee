@@ -44,7 +44,7 @@ postLogin = (req, res) ->
             if usr[0].password == crypto.createHmac('sha256', usr[0].passwordsha256).update(req.body.password).digest 'hex'
                 sessionId = ''
                 loop
-                    sessionId = randomString 64, '`1234567890-=qwetyuiop[]asdfghjkl;\'\\zxcvbnm,./~!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:"|ZXCVBNM<>?åöäÅÖÄßüÜявертъуиопшщасдфгхйклюзьцжбнмЧ№€§=-½¤=ЯВЕРТЪУИОПШЩАСДФГХЙКЛЗѝЦЖБНМ“'
+                    sessionId = randomString 64, '`1234567890-=qwetyuiop[]asdfghjkl;\'\\zxcvbnm,./~!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:"|ZXCVBNM<>?åöäÅÖÄßüÜявертъуиопшщасдфгхйклюзьцжбнмЧ№€§=-½¤=ЯВЕРТЪУИОПШЩАСДФГХЙКЛЗѝЦЖБНМ“;ςερτυθιοπλκξηγφδσαζχψωβνμ3ΕΡΤΥΘΙΟΠΑΣΔΦΓΗΞΚΛΖΧΨΩΒΝΜ'
                     if checkSessionId(sessionId)
                         break
                 if req.body.rememberme

@@ -21,7 +21,7 @@ block content
                 .col-md-10
                     select#lang.form-control(name='lang', onchange='change();')
                         - for (var i = 0; i < langs.length; i++)
-                            option(value=langs[i].lang)= langs[i].lang
+                            option(value=langs[i].lang)= langs[i].display
             .form-group
                 .col-md-10.col-md-offset-2
                     button.btn.btn-primary(type='submit') Submit

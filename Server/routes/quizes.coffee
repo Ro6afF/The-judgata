@@ -9,6 +9,7 @@ models =
         result: require '../models/result'
         problem: require '../models/problem'
         lang: require '../models/lang'
+        test: require '../models/test'
     
 getCreate = (req, res) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
@@ -55,7 +56,7 @@ postEdit = (req, res) ->
     for k,v of req.body
         tasks[parseInt k] = v
     modules.user.getUsername req.cookies.sessionId, (name) ->
-        modules.db.update models.quiz.type, {_id: req.params.id, author: name}, {problems: tasks, start: (new Date(req.body.start)).toISOString(), end: (new Date(req.body.end)).toISOString()}, undefined, (err, raw) ->
+        modules.db.update models.quiz.type, {_id: req.params.id, author: name}, {problems: tasks, start: (new Date(req.body.start)).toISOString(), end: (new Date(req.body.end)).toISOString()}, (err, raw) ->
             if err
                 console.log err
                 res.render 'error', 
@@ -80,7 +81,7 @@ postNewProblem = (req, res) ->
                     for i in q.problems
                         tasks.push i
                     tasks.push ''
-                    modules.db.update models.quiz.type, q, {problems: tasks}, undefined, (err, raw) ->
+                    modules.db.update models.quiz.type, q, {problems: tasks}, (err, raw) ->
                         if err
                             res.status 500
                         else if raw.ok != 1
@@ -127,23 +128,25 @@ getTest = (req, res) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
         if name
             modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
-                    if quizes && quizes.length
-                        for q in quizes
+                if quizes && quizes.length
+                    for q in quizes
+                        start = new Date q.start
+                        now = new Date Date.now()
+                        end = new Date q.end
+                        if now > start && now < end
                             modules.db.find models.problem.type, {type: 'test'}, (err, problems) ->
-                                start = new Date q.start
-                                now = new Date Date.now()
-                                end = new Date q.end
-                                if now > start && now < end
+                                modules.db.find models.test.type, {user: name, quiz: req.params.id}, (err, tests) ->
                                     res.render 'quiz/test', 
                                         title: 'Submiting in ' + q.name
                                         username: name
                                         quiz: q
                                         problems: problems
-                                else
-                                    res.render 'error', 
-                                        title: 'Not perimted',
-                                        username: name,
-                                        text: 'Contest is not running'
+                                        answers: tests
+                        else
+                            res.render 'error', 
+                                title: 'Not perimted',
+                                username: name,
+                                text: 'Contest is not running'
         else
             res.render 'error', 
                     title: 'Not perimted',
@@ -178,6 +181,7 @@ downloadSource = (req, res) ->
                     text: 'This is not your source!'
                     
 postSubmit = (req, res) ->
+    console.log req.body
     modules.user.getUsername req.cookies.sessionId, (name) ->
         modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
             modules.db.add new (models.task.type)(
@@ -196,35 +200,58 @@ postSubmit = (req, res) ->
         
 getResults = (req, res) ->
     modules.db.find models.result.type, {contest: req.params.id}, (err, submits) ->
-        resultsTask = {}
-        for i in submits
-            if !resultsTask[i.task]
-                resultsTask[i.task] = {}
-            if (!resultsTask[i.task][i.user]) || (resultsTask[i.task][i.user] < i.result)
-                resultsTask[i.task][i.user] = i.result
-        resultsUser = {}
-        for k, v of resultsTask
-            for j, c of v
-                if !resultsUser[j]
-                    resultsUser[j] = 0
-                resultsUser[j] += c
-        if req.headers['user-agent'] == 'API'
-            res.json resultsUser
-        else
-            results = []
-            for k, v of resultsUser
-                results.push {name: k, points: v}
-            results.sort (x, y) ->
-                y.points - x.points
-            modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
-                if quizes && quizes.length
-                    for q in quizes
-                        modules.user.getUsername req.cookies.sessionId, (name) ->
-                            res.render 'quiz/results',
-                                title: 'Results for ' + q.name
-                                username: name
-                                results: results
+        modules.db.find models.test.type, {quiz: req.params.id}, (err, tests) ->
+            resultsTask = {}
+            for i in submits
+                if !resultsTask[i.task]
+                    resultsTask[i.task] = {}
+                if (!resultsTask[i.task][i.user]) || (resultsTask[i.task][i.user] < i.result)
+                    resultsTask[i.task][i.user] = i.result
+            for i in tests
+                if !resultsTask[i.task]
+                    resultsTask[i.task] = {}
+                if i.correct
+                    resultsTask[i.task][i.user] = 100
+                else
+                    resultsTask[i.task][i.user] = 0
+            resultsUser = {}
+            for k, v of resultsTask
+                for j, c of v
+                    if !resultsUser[j]
+                        resultsUser[j] = 0
+                    resultsUser[j] += c
+            if req.headers['user-agent'] == 'API'
+                res.json resultsUser
+            else
+                results = []
+                for k, v of resultsUser
+                    results.push {name: k, points: v}
+                results.sort (x, y) ->
+                    y.points - x.points
+                modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
+                    if quizes && quizes.length
+                        for q in quizes
+                            modules.user.getUsername req.cookies.sessionId, (name) ->
+                                res.render 'quiz/results',
+                                    title: 'Results for ' + q.name
+                                    username: name
+                                    results: results
                                 
+postTest = (req, res) ->
+    modules.user.getUsername req.cookies.sessionId, (name) ->
+        if name
+            modules.db.find models.problem.type, {_id: req.params.tid, type: 'test'}, (err, problems) ->
+                if problems && problems.length
+                    modules.db.remove models.test.type, {quiz: req.params.qid, problem: req.params.tid, user: name}, () ->
+                    modules.db.add (new models.test.type {quiz: req.params.qid, problem: req.params.tid, user: name, answer: req.body.ans, correct: parseInt(req.body.ans) == problems[0].ans, task: problems[0].name}), () ->
+                    res.redirect '/quiz/test/' + req.params.qid
+        else
+            res.render 'error', 
+                title: 'Not perimted',
+                username: name,
+                text: 'Login to test in quiz!'
+
+
 exports.getCreate = getCreate
 exports.postCreate = postCreate
 exports.getEdit = getEdit
@@ -236,3 +263,4 @@ exports.getResults = getResults
 exports.downloadSource = downloadSource
 exports.getSubmitDetails = getSubmitDetails
 exports.getTest = getTest
+exports.postTest = postTest

@@ -1,42 +1,42 @@
 {
-  "name": "Quizer",
-  "version": "0.0.1",
-  "description": "Quizer web server",
-  "keywords": [
-    "node",
-    "web",
-    "server",
-    "javascript"
-  ],
-  "homepage": "https://github.com/Ro6afF/Quizer",
-  "bugs": {
-    "url": "https://github.com/Ro6afF/Quizer/issues"
-  },
-  "license": "GPL-3.0",
-  "author": {
-    "name": "Dimo Chanev"
-  },
-  "main": "server.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Ro6afF/Quizer"
-  },
-  "scripts": {
-    "start": "./run"
-  },
-  "dependencies": {
-    "body-parser": "*",
-    "codemirror": "*",
-    "bootstrap": "*",
-    "coffee-middleware": "*",
-    "cookie-parser": "*",
-    "express": "*",
-    "express-session": "*",
-    "jade": "*",
-    "jquery": "*",
-    "mongodb": "*",
-    "mongoose": "*",
-    "express-stylus": "*",
-    "flatpickr": "*"
-  }
+    "name": "The-judgata",
+    "version": "0.0.1",
+    "description": "The-judgata web server",
+    "keywords": [
+        "node",
+        "web",
+        "server",
+        "coffeescript"
+    ],
+    "homepage": "https://github.com/Ro6afF/The-judgata",
+    "bugs": {
+        "url": "https://github.com/Ro6afF/The-judgata/issues"
+    },
+    "license": "GPL-3.0",
+    "author": {
+        "name": "Dimo Chanev"
+    },
+    "main": "server.coffee",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Ro6afF/The-judgata"
+    },
+    "scripts": {
+        "start": "./run"
+    },
+    "dependencies": {
+        "body-parser": "*",
+        "codemirror": "*",
+        "bootstrap": "*",
+        "coffee-middleware": "*",
+        "cookie-parser": "*",
+        "express": "*",
+        "express-session": "*",
+        "jade": "*",
+        "jquery": "*",
+        "mongodb": "*",
+        "mongoose": "*",
+        "express-stylus": "*",
+        "flatpickr": "*"
+    }
 }

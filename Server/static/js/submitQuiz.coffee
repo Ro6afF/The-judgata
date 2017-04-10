@@ -11,18 +11,11 @@ modes =
     cs: 'text/x-csharp'
     rs: 'text/x-rustsrc'
     py: 'text/x-python'
-
-names = 
-    cpp: 'C/C++'
-    hs: 'Haskell'
-    cs: 'C#'
-    rs: 'Rust'
     
 change = ->
     e = document.getElementById 'lang' 
     value = e.options[e.selectedIndex].value
     text = e.options[e.selectedIndex].text
-    console.log value
     editor.setOption 'mode', modes[value]
     CodeMirror.autoLoadMode editor, modes[value]
     return

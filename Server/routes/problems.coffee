@@ -53,7 +53,7 @@ postNewOption = (req, res) ->
                     for i in p.options
                         opts.push i
                     opts.push ''
-                    modules.db.update models.problem.type, p, {options: opts}, undefined, (err, raw) ->
+                    modules.db.update models.problem.type, p, {options: opts}, (err, raw) ->
                         if err
                             res.status 500
                         else if raw.ok != 1
@@ -70,7 +70,7 @@ postEdit = (req, res) ->
     for k,v of req.body
         opts[parseInt k] = v
     modules.user.getUsername req.cookies.sessionId, (name) ->
-        modules.db.update models.problem.type, {_id: req.params.id, author: name}, {options: opts, description: req.body.description, ans: parseInt req.body.ans}, undefined, (err, raw) ->
+        modules.db.update models.problem.type, {_id: req.params.id, author: name}, {options: opts, description: req.body.description, ans: parseInt req.body.ans}, (err, raw) ->
             if err
                 console.log err
                 res.render 'error', 

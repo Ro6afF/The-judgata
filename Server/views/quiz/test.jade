@@ -14,7 +14,14 @@ block content
                                     .col-md-10
                                         .radio.radio-primary
                                             label=curr.options[j]
-                                                input(name='ans', value=j, type='radio')
+                                                if answers && answers.length
+                                                    -for (var n = 0; n < answers.length; n++)
+                                                        if answers[n].answer == j
+                                                            input(name='ans', value=j, type='radio', checked='checked')
+                                                        else
+                                                            input(name='ans', value=j, type='radio')
+                                                else
+                                                    input(name='ans', value=j, type='radio')
                             .form-group
                                 .col-md-10.col-md-offset-2
                                     button.btn.btn-primary(type='submit') Send

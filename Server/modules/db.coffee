@@ -12,7 +12,7 @@ remove = (a, b, cb) ->
     a.remove b, cb
     return
 
-update = (a, b, c, opts, cb) ->
+update = (a, b, c, cb) ->
     a.update b, c, cb
     return
 
