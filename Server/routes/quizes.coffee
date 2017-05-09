@@ -1,3 +1,4 @@
+markdown = (require 'markdown').markdown
 modules = 
         db: require '../modules/db'
         user: require '../modules/user'
@@ -58,7 +59,6 @@ postEdit = (req, res) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
         modules.db.update models.quiz.type, {_id: req.params.id, author: name}, {problems: tasks, start: (new Date(req.body.start)).toISOString(), end: (new Date(req.body.end)).toISOString()}, (err, raw) ->
             if err
-                console.log err
                 res.render 'error', 
                     title: '500',
                     username: name,
@@ -181,20 +181,36 @@ downloadSource = (req, res) ->
                     text: 'This is not your source!'
                     
 postSubmit = (req, res) ->
-    console.log req.body
     modules.user.getUsername req.cookies.sessionId, (name) ->
         modules.db.find models.quiz.type, {_id: req.params.id}, (err, quizes) ->
-            modules.db.add new (models.task.type)(
-                code: req.body.code
-                user: name
-                task: req.body.task
-                lang: req.body.lang
-                contest: req.params.id
-                contestName: quizes[0].name), (a) ->
-                    if quizes && quizes.length
-                        for q in quizes
-                            res.redirect '/quiz/submit/' + req.params.id
-                return
+            modules.db.find models.problem.type, {_id: req.body.task}, (err, tasks) ->
+                start = new Date quizes[0].start
+                now = new Date Date.now()
+                end = new Date quizes[0].end
+                if now > start && now < end
+                    unless tasks
+                        res.render 'error', 
+                            title: 'Internal server error!',
+                            username: name,
+                            text: 'Problem not found!'
+                    else
+                        modules.db.add new (models.task.type)(
+                            code: req.body.code
+                            user: name
+                            task: req.body.task
+                            taskName: tasks[0].name
+                            lang: req.body.lang
+                            contest: req.params.id
+                            contestName: quizes[0].name), (a) ->
+                                if quizes && quizes.length
+                                    for q in quizes
+                                        res.redirect '/quiz/submit/' + req.params.id
+                        return
+                else
+                    res.render 'error', 
+                        title: 'Not perimted',
+                        username: name,
+                        text: 'Contest is not running'
         return
     return        
         
@@ -240,17 +256,56 @@ getResults = (req, res) ->
 postTest = (req, res) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
         if name
-            modules.db.find models.problem.type, {_id: req.params.tid, type: 'test'}, (err, problems) ->
-                if problems && problems.length
-                    modules.db.remove models.test.type, {quiz: req.params.qid, problem: req.params.tid, user: name}, () ->
-                    modules.db.add (new models.test.type {quiz: req.params.qid, problem: req.params.tid, user: name, answer: req.body.ans, correct: parseInt(req.body.ans) == problems[0].ans, task: problems[0].name}), () ->
-                    res.redirect '/quiz/test/' + req.params.qid
+            modules.db.find models.quiz.type, (err, quizes) ->
+                start = new Date quizes[0].start
+                now = new Date Date.now()
+                end = new Date quizes[0].end
+                if now > start && now < end
+                    modules.db.find models.problem.type, {_id: req.params.tid, type: 'test'}, (err, problems) ->
+                        if problems && problems.length
+                            modules.db.remove models.test.type, {quiz: req.params.qid, problem: req.params.tid, user: name}, () ->
+                            modules.db.add (new models.test.type {quiz: req.params.qid, problem: req.params.tid, user: name, answer: req.body.ans, correct: parseInt(req.body.ans) == problems[0].ans, task: problems[0]._id}), () ->
+                            res.redirect '/quiz/test/' + req.params.qid
+                else
+                    res.render 'error', 
+                        title: 'Not perimted',
+                        username: name,
+                        text: 'Contest is not running'
         else
             res.render 'error', 
                 title: 'Not perimted',
                 username: name,
                 text: 'Login to test in quiz!'
 
+getDescription = (req, res) ->
+    modules.user.getUsername req.cookies.sessionId, (name) ->
+        if name
+            modules.db.find models.problem.type, {_id: req.params.pid}, (err, problem) ->
+                modules.db.find models.quiz.type, {_id: req.params.qid}, (err, quiz) ->
+                    start = new Date quiz[0].start
+                    now = new Date Date.now()
+                    end = new Date quiz[0].end
+                    if now > start && now < end
+                        if (quiz && quiz.length && problem && problem.length) && ((quiz[0].problems.indexOf problem[0]._id) != -1)
+                            res.render 'quiz/taskDescription', 
+                                title: problem[0].name + ' - description',
+                                username: name,
+                                text: markdown.toHTML problem[0].description
+                        else
+                            res.render 'error', 
+                                title: 'Not perimted',
+                                username: name,
+                                text: 'Task not found'
+                    else
+                        res.render 'error', 
+                            title: 'Not perimted',
+                            username: name,
+                            text: 'Contest is not running'
+        else
+            res.render 'error', 
+                title: 'Not perimted',
+                username: name,
+                text: 'Login to submit in quiz!'
 
 exports.getCreate = getCreate
 exports.postCreate = postCreate
@@ -264,3 +319,4 @@ exports.downloadSource = downloadSource
 exports.getSubmitDetails = getSubmitDetails
 exports.getTest = getTest
 exports.postTest = postTest
+exports.getDescription = getDescription

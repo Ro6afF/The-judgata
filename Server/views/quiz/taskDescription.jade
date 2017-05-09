@@ -1,0 +1,11 @@
+extends ../layout
+
+block content
+    .panel
+        .panel-body#markdown= text
+
+block scripts
+    script(src='/taskDescription.js')
+
+block styles
+    link(rel='stylesheet', type='text/css', href='/description.css')

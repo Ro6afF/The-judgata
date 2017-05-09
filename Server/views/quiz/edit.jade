@@ -14,9 +14,9 @@ block content
                                     option(value='') Select one
                                     - for (var j = 0; j < problems.length; j++)
                                         if (problems[j].name == quiz.problems[i])
-                                            option(value=problems[j].name, selected='selected')= problems[j].name
+                                            option(value=problems[j]._id, selected='selected')= problems[j].name
                                         else
-                                            option(value=problems[j].name)= problems[j].name
+                                            option(value=problems[j]._id)= problems[j].name
                     .form-group
                         label.col-md-2.control-label(for='start') Active from
                         .col-md-10
@@ -34,8 +34,12 @@ block content
 block scripts
     script(src='/editQuiz.js')
     script(src='/flatpickr.min.js')
-    script $("#start").flatpickr({enableTime: true});
-    script $("#end").flatpickr({enableTime: true});
+    if quiz.start
+        script="$('#start').flatpickr({enableTime: true, defaultDate: new Date('" + quiz.start + "').toISOString()});"
+        script="$('#end').flatpickr({enableTime: true, defaultDate: new Date('" + quiz.end + "').toISOString()});"
+    else
+        script="$('#start').flatpickr({enableTime: true});"
+        script="$('#end').flatpickr({enableTime: true});"
     
 block styles
     link(rel='stylesheet', type='text/css', href='/flatpickr.min.css')

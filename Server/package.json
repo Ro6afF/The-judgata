@@ -37,6 +37,7 @@
         "mongodb": "*",
         "mongoose": "*",
         "express-stylus": "*",
-        "flatpickr": "*"
+        "flatpickr": "*",
+        "markdown": "*"
     }
 }

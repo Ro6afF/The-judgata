@@ -6,6 +6,7 @@ resultSchema = mongoose.Schema
     idT: String
     lang: String
     task: String
+    taskName: String
     result: Number
     contestName: String
     feedback: []

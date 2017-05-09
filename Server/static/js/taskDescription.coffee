@@ -1,0 +1,1 @@
+$('#markdown').html $('#markdown').text()

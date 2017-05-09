@@ -7,11 +7,17 @@ block content
             .form-group
                 label.col-md-2.control-label(for='task') Task
                 .col-md-10
-                    select#task.form-control(name='task')
-                        option(value='') Select one
+                    select#task.form-control(name='task', onchange='changeTask();')
+                        option(value='', selcted='selcted') Select one
                         - for (var i = 0; i < quiz.problems.length; i++)
-                            if problems.find(function (el) {return el.name == quiz.problems[i]})
-                                option(value=quiz.problems[i])= quiz.problems[i]
+                            - res = problems.find(function (el) {return el._id == quiz.problems[i]})
+                            if res
+                                option(value=res._id)= res.name
+            .form-group
+                label.col-md-2.control-label
+                .col-md-10
+                    span#description-button
+                        a.btn.btn-raised.btn-success(href='#', disabled='disabled') Select task
             .form-group
                 label.col-md-2.control-label(for='code') Code
                 .col-md-10
@@ -19,7 +25,7 @@ block content
             .form-group
                 label.col-md-2.control-label(for='lang') Language
                 .col-md-10
-                    select#lang.form-control(name='lang', onchange='change();')
+                    select#lang.form-control(name='lang', onchange='changeLang();')
                         - for (var i = 0; i < langs.length; i++)
                             option(value=langs[i].lang)= langs[i].display
             .form-group

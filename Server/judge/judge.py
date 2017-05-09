@@ -32,7 +32,6 @@ def getLang(lang):
     return db.langs.find_one({'lang': lang})
 
 def getNumberOfFiles(direc):
-    sys.stderr.flush()
     return len(next(os.walk(direc))[2])
 
 def compileProgram(path, dest, lang):
@@ -58,8 +57,6 @@ def grade(task, box, exe):
         process = subprocess.Popen(['isolate', '-i', task + '/' + str(i) + '.in', '-o', task + '/' + str(i) + '.res', '-b', str(box), '-t', '1', '-m', str(16*10*1024), '--run'] + exe, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         process.wait()
         out, err = process.communicate()
-        print(out)
-        print(err)
         res = err.decode('utf-8')
         if res[:2] == 'OK':
             process = subprocess.Popen(['diff', '-w' , getBoxPlace(box) + task + '/' + str(i) + '.res', getBoxPlace(box) + task + '/sols/' + str(i) + '.sol'], stdout=subprocess.PIPE)
@@ -77,7 +74,7 @@ def grade(task, box, exe):
             feedback += ['RE']
     return (result, feedback)
 
-def judge(Id, code, user, task, lang, contest, contestName, boxes):
+def judge(Id, code, user, task, taskName, lang, contest, contestName, boxes):
     path = '/judge/submits/' + user + '/' + task
     os.makedirs(path, exist_ok=True)
     path += '/' + str(Id) + '.' + lang
@@ -106,11 +103,10 @@ def judge(Id, code, user, task, lang, contest, contestName, boxes):
                 runCommand += ['solution']
             else:
                 runCommand += [i]
-    print(runCommand)
     subprocess.call(['cp', '/judge/tests/' + task, getBoxPlace(currBox), '-rf'])
     if not (feedback == ['Compilation error'] or feedback == ['Compilation time limit']):
         result, feedback = grade(task, currBox, runCommand)
-    db.results.insert_one({'idT': str(Id), 'result': round(result), 'contest': contest, 'user': user, 'task': task, 'contestName': contestName, 'feedback': feedback, 'lang': lang})
+    db.results.insert_one({'idT': str(Id), 'result': round(result), 'contest': contest, 'user': user, 'task': task, 'taskName': taskName, 'contestName': contestName, 'feedback': feedback, 'lang': lang})
     deinitBox(currBox, boxes)
 
 def getTask():
@@ -123,7 +119,7 @@ def getTask():
         if blq:
             try:
                 db.tasks.delete_one(blq)
-                job = multiprocessing.Process(target=judge, args=(blq['_id'], blq['code'], blq['user'], blq['task'], blq['lang'], blq['contest'], blq['contestName'], boxes))
+                job = multiprocessing.Process(target=judge, args=(blq['_id'], blq['code'], blq['user'], blq['task'], blq['taskName'], blq['lang'], blq['contest'], blq['contestName'], boxes))
                 jobs.append(job)
                 job.start()
                 if len(jobs) >= max_threads:
@@ -132,7 +128,6 @@ def getTask():
             except:
                 time.sleep(randint(1, 10))
         else:
-            sys.stdout.flush()
             time.sleep(10)
         time.sleep(1)
 

@@ -2,7 +2,7 @@ extends ../layout
 
 block content
     - for (var i = 0; i < quiz.problems.length; i++)
-        -var curr = problems.find(function (el) {return el.name == quiz.problems[i]})
+        -var curr = problems.find(function (el) {return el._id == quiz.problems[i]})
         if curr
             .col-md-6
                 .well.bs-component
@@ -16,7 +16,7 @@ block content
                                             label=curr.options[j]
                                                 if answers && answers.length
                                                     -for (var n = 0; n < answers.length; n++)
-                                                        if answers[n].answer == j
+                                                        if answers[n].task == curr._id && answers[n].answer == j
                                                             input(name='ans', value=j, type='radio', checked='checked')
                                                         else
                                                             input(name='ans', value=j, type='radio')

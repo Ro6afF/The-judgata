@@ -70,20 +70,35 @@ postEdit = (req, res) ->
     for k,v of req.body
         opts[parseInt k] = v
     modules.user.getUsername req.cookies.sessionId, (name) ->
-        modules.db.update models.problem.type, {_id: req.params.id, author: name}, {options: opts, description: req.body.description, ans: parseInt req.body.ans}, (err, raw) ->
-            if err
-                console.log err
-                res.render 'error', 
-                    title: '500',
-                    username: name,
-                    text: 'Internal server error'
-            else if raw.ok != 1
-                res.render 'error', 
-                    title: 'Not perimted',
-                    username: name,
-                    text: 'You are not permited to edit this problem!'
+        modules.db.find models.problem.type, {_id: req.params.id, author: name}, (err, problem) ->
+            if problem[0].type == 'test'
+                modules.db.update models.problem.type, problem[0], {options: opts, description: req.body.description, ans: parseInt req.body.ans}, (err, raw) ->
+                    if err
+                        res.render 'error', 
+                            title: '500',
+                            username: name,
+                            text: 'Internal server error'
+                    else if raw.ok != 1
+                        res.render 'error', 
+                            title: 'Not perimted',
+                            username: name,
+                            text: 'You are not permited to edit this problem!'
+                    else
+                        res.redirect '/'
             else
-                res.redirect '/'
+                modules.db.update models.problem.type, problem[0], {description: req.body.description}, (err, raw) ->
+                    if err
+                        res.render 'error', 
+                            title: '500',
+                            username: name,
+                            text: 'Internal server error'
+                    else if raw.ok != 1
+                        res.render 'error', 
+                            title: 'Not perimted',
+                            username: name,
+                            text: 'You are not permited to edit this problem!'
+                    else
+                        res.redirect '/'
                 
 exports.getCreate = getCreate
 exports.postCreate = postCreate

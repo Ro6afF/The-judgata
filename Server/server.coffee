@@ -82,6 +82,8 @@ app.post '/problem/edit/:id', routes.problems.postEdit
 
 app.post '/problem/newOption/:id', routes.problems.postNewOption
 
+app.get '/quiz/submit/:qid/description/:pid', routes.quizes.getDescription
+
 app.use (req, res, next) ->
     modules.user.getUsername req.cookies.sessionId, (name) ->
         res.render 'error', 

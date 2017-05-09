@@ -10,8 +10,12 @@ block content
                         label.col-md-2.control-label(for='description') Description
                         .col-md-10
                             textarea#description.form-control(rows='3', name='description')= problem.description
+                            if problem.type == 'code'
+                                p
+                                    | Write descriptions in 
+                                    a(href='https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet', target='_blank') Markdown
                     if problem.type == 'code'
-                        h1.text-danger Not implemented
+                        h1.text-danger In-browser test editing not implemented!
                     else
                         -for (var i = 0; i < problem.options.length; i++)
                             .form-group
