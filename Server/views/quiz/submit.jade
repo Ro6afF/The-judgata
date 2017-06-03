@@ -43,14 +43,19 @@ block content
                         th
                 tbody
                     - for (var i = submits.length - 1; i >= 0; i--)
-                        tr
-                            td= i + 1
-                            - var blq = submits[i]['feedback']
-                            td
-                                - for (var j of blq)
-                                    span= j + ' '
-                            td
-                                a.btn.btn-primary(href = '../details/' + submits[i]['idT']) Details
+                        if submits[i]['idT']
+                            tr
+                                td= i + 1
+                                - var blq = submits[i]['feedback']
+                                td
+                                    - for (var j of blq)
+                                        span= j + ' '
+                                td
+                                    a.btn.btn-primary(href = '../details/' + submits[i]['idT']) Details
+                        else
+                            tr
+                                td= i + 1
+                                td Judging
                 
                 
                     

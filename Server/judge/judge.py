@@ -6,28 +6,6 @@ from random import randint
 
 db = MongoClient().judgata
 
-max_threads = multiprocessing.cpu_count()
-
-def getFreeBox(boxes):
-    for i in range(max_threads):
-        if boxes[i]:
-            boxes[i] = False
-            return i
-    return -1
-
-    
-def getBoxPlace(Id):
-    return '/var/local/lib/isolate/' + str(Id) + '/box/'
-
-def initBox(boxes):
-    curr = getFreeBox(boxes)
-    subprocess.call(['isolate', '-b', str(curr), '--init'])
-    return curr
-
-def deinitBox(Id, boxes):
-    subprocess.call(['isolate', '-b', str(Id), '--cleanup'])
-    boxes[int(str(Id))] = True
-
 def getLang(lang):
     return db.langs.find_one({'lang': lang})
 
@@ -48,83 +26,79 @@ def compileProgram(path, dest, lang):
         os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
         return 1
 
-def grade(task, box, exe):
+def grade(task, exe):
     result = 0
-    tests = getNumberOfFiles(getBoxPlace(box) + task)
+    tests = getNumberOfFiles('/judge/tests/' + task)
     ppt = 100 / tests
     feedback = []
     for i in range(tests):
-        process = subprocess.Popen(['isolate', '-i', task + '/' + str(i) + '.in', '-o', task + '/' + str(i) + '.res', '-b', str(box), '-t', '1', '-m', str(16*10*1024), '--run'] + exe, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        procc = ''
+        for j in exe:
+            procc += j + ' '
+        procc += '< /tests/' + str(i) + '.in > /tests/' + str(i) + '.out'
+        process = subprocess.Popen(['docker', 'run', '-m=10M', '-v', '/judge/tests/' + task + ':/tests', '-v', '/judge/temp:/workdir', '-w', '/workdir', '--network', 'none', '--read-only', 'boza', '/bin/bash', '-c', 'timeout 1 ' + procc])
         process.wait()
-        out, err = process.communicate()
-        res = err.decode('utf-8')
-        if res[:2] == 'OK':
-            process = subprocess.Popen(['diff', '-w' , getBoxPlace(box) + task + '/' + str(i) + '.res', getBoxPlace(box) + task + '/sols/' + str(i) + '.sol'], stdout=subprocess.PIPE)
+        rc = process.returncode
+        if rc == 137:
+            feedback += ['ML']
+        elif rc == 124:
+            feedback += ['TL']
+        elif rc == 0:
+            process = subprocess.Popen(['diff', '/judge/tests/' + task + '/' + str(i) + '.out', '/judge/tests/' + task + '/sols/' + str(i) + '.sol'], stdout=subprocess.PIPE)
             out, err = process.communicate()
             if out.decode('utf-8') == '':
                 feedback += ['OK']
                 result += ppt
             else:
                 feedback += ['WA']
-        elif res.strip() == 'Time limit exceeded':
-            feedback += ['TL']
-        elif res == 'Caught fatal signal 11':
-            feedback += ['SF']
         else:
             feedback += ['RE']
-    return (result, feedback)
+    subprocess.run(['find', '/judge/tests/' + task, '-name',  '*.out', '-delete'])
+    return result, feedback
 
-def judge(Id, code, user, task, taskName, lang, contest, contestName, boxes):
+def judge(Id, code, user, task, taskName, lang, contest, contestName):
     path = '/judge/submits/' + user + '/' + task
     os.makedirs(path, exist_ok=True)
     path += '/' + str(Id) + '.' + lang
     source = open(path, 'w')
     source.write(code)
     source.close()
-    currBox = initBox(boxes)
     langDb = getLang(lang)
     runCommand = []
     exe = 123
     result = 0
     feedback = []
     if langDb['type'] == 'compiled':
-        runCommand = ['solution']
-        exe = compileProgram(path, getBoxPlace(currBox) + 'solution', langDb)
+        runCommand = ['./' + str(Id)]
+        exe = compileProgram(path, '/judge/temp/' + str(Id), langDb)
         if exe == 0:
             feedback = ['Compilation error']
         elif exe == 1:
             feedback = ['Compilation time limit']
     else:
-        File = open(getBoxPlace(currBox) + 'solution', 'w')
+        File = open('/judge/temp/' + str(Id), 'w')
         File.write(code)
         File.close()
         for i in langDb['exec']:
             if i == '__SOURCE__':
-                runCommand += ['solution']
+                runCommand += [str(Id)]
             else:
                 runCommand += [i]
-    subprocess.call(['cp', '/judge/tests/' + task, getBoxPlace(currBox), '-rf'])
     if not (feedback == ['Compilation error'] or feedback == ['Compilation time limit']):
-        result, feedback = grade(task, currBox, runCommand)
+        result, feedback = grade(task, runCommand)
+    try:
+        os.remove('/judge/temp/' + str(Id))
+    except:
+        feedback = feedback
     db.results.insert_one({'idT': str(Id), 'result': round(result), 'contest': contest, 'user': user, 'task': task, 'taskName': taskName, 'contestName': contestName, 'feedback': feedback, 'lang': lang})
-    deinitBox(currBox, boxes)
 
 def getTask():
-    jobs = []
-    boxes = multiprocessing.Array('i', range(max_threads))
-    for i in range(max_threads):
-        boxes[i] = True
     while True:
         blq = db.tasks.find_one()
         if blq:
             try:
                 db.tasks.delete_one(blq)
-                job = multiprocessing.Process(target=judge, args=(blq['_id'], blq['code'], blq['user'], blq['task'], blq['taskName'], blq['lang'], blq['contest'], blq['contestName'], boxes))
-                jobs.append(job)
-                job.start()
-                if len(jobs) >= max_threads:
-                    jobs[0].join()
-                    jobs= jobs[1:]
+                judge(blq['_id'], blq['code'], blq['user'], blq['task'], blq['taskName'], blq['lang'], blq['contest'], blq['contestName'])
             except:
                 time.sleep(randint(1, 10))
         else:

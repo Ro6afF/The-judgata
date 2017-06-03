@@ -106,13 +106,16 @@ getSubmit = (req, res) ->
                                 if now > start && now < end
                                     modules.db.find models.lang.type, {}, (err, langs) ->
                                         modules.db.find models.result.type, {user: name, contest: req.params.id}, (err, submits) ->
-                                            res.render 'quiz/submit', 
-                                                title: 'Submiting in ' + q.name
-                                                username: name
-                                                langs: langs
-                                                quiz: q
-                                                submits: submits
-                                                problems: problems
+                                            modules.db.find models.task.type, {user: name, contest: req.params.id}, (err, tasks) ->
+                                                all = submits
+                                                all = all.concat tasks
+                                                res.render 'quiz/submit', 
+                                                    title: 'Submiting in ' + q.name
+                                                    username: name
+                                                    langs: langs
+                                                    quiz: q
+                                                    submits: all
+                                                    problems: problems
                                 else
                                     res.render 'error', 
                                         title: 'Not perimted',
